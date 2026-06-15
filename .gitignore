@@ -1,0 +1,28 @@
+# ─── Variáveis de ambiente e segredos ───────────────────────
+# Aqui ficam senhas, URLs do banco, chaves JWT — NUNCA sobem pro GitHub
+.env
+.env.*
+*.env
+
+# ─── Java / Spring Boot (backend futuro) ────────────────────
+target/
+*.class
+*.jar
+*.war
+*.log
+.mvn/
+
+# ─── React / Node (frontend futuro) ─────────────────────────
+node_modules/
+dist/
+build/
+.next/
+
+# ─── IDEs e editores ─────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.iml
+
+# ─── Sistema operacional ─────────────────────────────────────
+.DS_Store
+Thumbs.db
