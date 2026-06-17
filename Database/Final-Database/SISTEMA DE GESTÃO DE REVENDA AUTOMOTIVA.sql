@@ -34,8 +34,8 @@ CREATE TABLE revendas (
     email           VARCHAR(150),
     endereco        VARCHAR(260),
     cidade          VARCHAR(150),
-    estado          VARCHAR(2),
-    cep             VARCHAR(10),
+    estado          CHAR(2),
+    cep             CHAR(9),
     status_revenda  VARCHAR(20) NOT NULL DEFAULT 'ATIVA',
     data_cadastro   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -133,7 +133,7 @@ INSERT INTO categoria (descricao) VALUES
 CREATE TABLE funcionarios (
     codigo              SERIAL PRIMARY KEY,
     nome                VARCHAR(100) NOT NULL,
-    cpf                 VARCHAR(14) NOT NULL UNIQUE,
+    cpf                 CHAR(14) NOT NULL UNIQUE,
     telefone            VARCHAR(20),
     email               VARCHAR(100) UNIQUE,
     cargo               VARCHAR(100) NOT NULL,
@@ -275,12 +275,12 @@ VALUES (4, 4), (4, 5), (4, 10);
 CREATE TABLE clientes (
     codigo          SERIAL PRIMARY KEY,
     nome            VARCHAR(200) NOT NULL,
-    cpf             VARCHAR(14) UNIQUE NOT NULL,
+    cpf             CHAR(14) UNIQUE NOT NULL,
     telefone        VARCHAR(20),
     email           VARCHAR(150),
     endereco        VARCHAR(300),
     cidade          VARCHAR(100),
-    estado          VARCHAR(2),
+    estado          CHAR(2),
     revenda_codigo  INT,
     data_cadastro   DATE DEFAULT CURRENT_DATE,
 
@@ -300,13 +300,13 @@ CREATE INDEX idx_clientes_revenda ON clientes(revenda_codigo);
 CREATE TABLE fornecedores (
     codigo      SERIAL PRIMARY KEY,
     nome        VARCHAR(200) NOT NULL,
-    tipo_pessoa VARCHAR(2) NOT NULL,
-    cpf         VARCHAR(14),
-    cnpj        VARCHAR(18),
+    tipo_pessoa CHAR(2) NOT NULL,
+    cpf         CHAR(14),
+    cnpj        CHAR(18),
     telefone    VARCHAR(20),
     email       VARCHAR(150) UNIQUE,
     cidade      VARCHAR(100),
-    estado      VARCHAR(2),
+    estado      CHAR(2),
 
     CONSTRAINT chk_tipo_pessoa
         CHECK (tipo_pessoa IN ('PF', 'PJ')),
@@ -836,4 +836,3 @@ CREATE POLICY vendas_revenda_policy
 CREATE POLICY fornecedor_revenda_policy
     ON fornecedor_revenda FOR ALL
     USING (revenda_codigo = current_setting('app.revenda_logada')::INTEGER);
-
