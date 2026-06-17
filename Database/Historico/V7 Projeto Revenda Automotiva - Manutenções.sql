@@ -1,5 +1,5 @@
 --======================================
--- V7 TABELA DE MANUTENÇÃO DE VEÍCULOS
+-- V8 TABELA DE MANUTENÇÃO DE VEÍCULOS
 --======================================
 
 CREATE TABLE manutencao_veiculos (

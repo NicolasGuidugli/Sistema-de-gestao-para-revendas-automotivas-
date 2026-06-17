@@ -1,5 +1,5 @@
 --=====================================
--- CRIANDO TABELA DE FORNECEDORES
+-- V7 CRIANDO TABELA DE FORNECEDORES
 --=====================================
 
 CREATE TABLE fornecedores (

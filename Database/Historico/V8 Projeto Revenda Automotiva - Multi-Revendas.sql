@@ -1,5 +1,5 @@
 --===========================================
--- CRIANDO TABELA DE MULTI-REVENDAS UTILIZANDO UUID
+-- V9 CRIANDO TABELA DE MULTI-REVENDAS UTILIZANDO UUID
 --===========================================
 
 CREATE TABLE revendas (

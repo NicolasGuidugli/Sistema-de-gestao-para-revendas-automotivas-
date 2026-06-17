@@ -1,5 +1,5 @@
 --=======================================
--- V4 CRIANDO TABELA DE FUNCIONARIOS - VENDEDORES
+-- V5 CRIANDO TABELA DE FUNCIONARIOS - VENDEDORES
 --=======================================
 
 CREATE TABLE funcionarios (

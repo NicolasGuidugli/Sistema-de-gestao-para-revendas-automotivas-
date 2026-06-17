@@ -1,5 +1,5 @@
 --=============================================
--- CRIANDO TABELA DE AUDITORIA
+-- V11 CRIANDO TABELA DE AUDITORIA
 --=============================================
 
 CREATE TABLE auditoria (
@@ -391,13 +391,13 @@ DECLARE
 BEGIN
 
  v_usuario :=
-    COALESCE(
-        current_setting(
-            'app.usuario_logado',
-            true
-        ),
-        '0'
-    )::INTEGER;
+NULLIF(
+    current_setting(
+        'app.usuario_logado',
+        true
+    ),
+    ''
+)::INTEGER;
 
 IF TG_OP = 'DELETE' THEN
 
@@ -465,10 +465,14 @@ IF TG_OP = 'INSERT' THEN
 
 END IF;
 
-    v_usuario :=
-        current_setting(
-            'app.usuario_logado'
-        )::INTEGER;
+   v_usuario :=
+NULLIF(
+    current_setting(
+        'app.usuario_logado',
+        true
+    ),
+    ''
+)::INTEGER;
 
     IF TG_TABLE_NAME = 'automoveis' THEN
 
@@ -491,6 +495,7 @@ END IF;
         IF v_campo IN
         (
             'codigo',
+            'data_cadastro',
             'data_cadastro'
         )
         THEN

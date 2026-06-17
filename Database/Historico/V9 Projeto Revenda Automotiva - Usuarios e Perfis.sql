@@ -1,5 +1,5 @@
 --=========================================
--- CRIANDO TABELA DE PERFIS
+-- V10 CRIANDO TABELA DE PERFIS
 --=========================================
 
 CREATE TABLE perfis

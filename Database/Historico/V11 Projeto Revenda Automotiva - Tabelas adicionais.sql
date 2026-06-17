@@ -1,5 +1,5 @@
 --===================================
--- ADICIONANDO TABELA DE MARCAS VEICULOS
+-- V12 ADICIONANDO TABELA DE MARCAS VEICULOS
 --===================================
 
 CREATE TABLE marcas
