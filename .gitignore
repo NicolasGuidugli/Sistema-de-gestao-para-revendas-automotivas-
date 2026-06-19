@@ -30,3 +30,6 @@ Thumbs.db
 # Configurações sensíveis do backend
 **/application.properties
 **/*.env
+
+### VS Code ###
+.vscode/
