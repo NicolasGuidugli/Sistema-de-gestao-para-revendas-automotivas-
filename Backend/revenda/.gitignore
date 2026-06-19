@@ -32,5 +32,13 @@ build/
 ### VS Code ###
 .vscode/
 
-# Configurações sensíveis — nunca subir para o GitHub
+# ============================================================
+# CONFIGURAÇÕES SENSÍVEIS — NUNCA SUBIR PARA O GITHUB
+# ============================================================
 src/main/resources/application.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.properties
+src/main/resources/application-local.properties
+*.env
+.env
+.env.*

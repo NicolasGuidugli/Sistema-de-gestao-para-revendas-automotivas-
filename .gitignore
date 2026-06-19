@@ -1,35 +1,56 @@
-# ─── Variáveis de ambiente e segredos ───────────────────────
-# Aqui ficam senhas, URLs do banco, chaves JWT — NUNCA sobem pro GitHub
+# ============================================================
+# VARIÁVEIS DE AMBIENTE E SEGREDOS
+# Senhas, URLs do banco, chaves JWT — NUNCA sobem pro GitHub
+# ============================================================
 .env
 .env.*
 *.env
+.env.local
+.env.development
+.env.production
+.env.test
 
-# ─── Java / Spring Boot (backend futuro) ────────────────────
+# ============================================================
+# CONFIGURAÇÕES SENSÍVEIS DO BACKEND
+# ============================================================
+**/application.properties
+**/application-prod.properties
+**/application-dev.properties
+**/application-local.properties
+
+# ============================================================
+# JAVA / SPRING BOOT
+# ============================================================
 target/
 *.class
 *.jar
 *.war
+*.ear
 *.log
 .mvn/
+hs_err_pid*
 
-# ─── React / Node (frontend futuro) ─────────────────────────
+# ============================================================
+# REACT / NODE (FRONTEND)
+# ============================================================
 node_modules/
 dist/
 build/
 .next/
+.cache/
 
-# ─── IDEs e editores ─────────────────────────────────────────
-.vscode/settings.json
+# ============================================================
+# IDES E EDITORES
+# ============================================================
+.vscode/
 .idea/
 *.iml
+*.suo
+*.user
 
-# ─── Sistema operacional ─────────────────────────────────────
+# ============================================================
+# SISTEMA OPERACIONAL
+# ============================================================
 .DS_Store
 Thumbs.db
-
-# Configurações sensíveis do backend
-**/application.properties
-**/*.env
-
-### VS Code ###
-.vscode/
+desktop.ini
