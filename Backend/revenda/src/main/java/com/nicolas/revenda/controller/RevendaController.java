@@ -1,0 +1,68 @@
+package com.nicolas.revenda.controller;
+
+//* Porta de entrada da API
+// Recebe as requisições HTTP e devolve respostas
+
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.nicolas.revenda.entity.Revenda;
+import com.nicolas.revenda.service.RevendaService;
+
+@RestController // Diz ao Spring que esta classe é um Controller que devolve JSON
+@RequestMapping("/api/revendas") // Define o caminho base de todos os endpoints desta classe
+public class RevendaController {
+
+    private final RevendaService revendaService; // Injeta o Service — Controller não acessa o banco diretamente
+
+    public RevendaController(RevendaService revendaService) {
+        this.revendaService = revendaService; 
+    }
+
+    // Lista todas as revendas
+    @GetMapping
+    public List<Revenda> listarTodas() {
+        return revendaService.listarTodas();
+    }
+
+    // Busca uma revenda específica pelo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Revenda> buscarPorId(@PathVariable Long id) {
+        return revendaService.buscarPorId(id)
+            .map(ResponseEntity::ok) // Se encontrou → retorna 200 OK com a revenda
+            .orElse(ResponseEntity.notFound().build()); // Se não encontrou → retorna 404
+    }
+
+    // Cria uma nova revenda
+    @PostMapping 
+    public ResponseEntity<Revenda> criar(@RequestBody Revenda revenda) {
+        Revenda salva = revendaService.salvar(revenda);
+        return ResponseEntity.status(201).body(salva); // 201 Created — recurso criado com sucesso
+    }
+
+    // Atualiza uma revenda existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Revenda> atualizar(
+        @PathVariable Long id,
+        @RequestBody Revenda revenda) {
+
+        return revendaService.buscarPorId(id)
+            .map(existente -> {
+                revenda.setCodigo(id); // Garante que o ID correto será usado na atualização
+                return ResponseEntity.ok(revendaService.atualizar(revenda));
+            })
+            .orElse(ResponseEntity.notFound().build()); // Se não encontrou → retorna 404
+    }
+
+    // Destroi uma revenda :(
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    if (!revendaService.buscarPorId(id).isPresent()) {
+        return ResponseEntity.notFound().build(); // 404 se não encontrou
+    }
+    revendaService.deletar(id);
+    return ResponseEntity.noContent().build(); // 204 No Content — deletado com sucesso
+    }
+
+}
