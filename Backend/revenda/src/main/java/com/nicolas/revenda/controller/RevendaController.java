@@ -4,11 +4,18 @@ package com.nicolas.revenda.controller;
 // Recebe as requisições HTTP e devolve respostas
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.nicolas.revenda.entity.Revenda;
 import com.nicolas.revenda.service.RevendaService;
+
+import jakarta.validation.Valid; // @Valid significa: "Antes de executar o método, valide todos os campos do DTO"
+
+import com.nicolas.revenda.dto.RevendaRequestDTO;
+import com.nicolas.revenda.dto.RevendaResponseDTO;
 
 @RestController // Diz ao Spring que esta classe é um Controller que devolve JSON
 @RequestMapping("/api/revendas") // Define o caminho base de todos os endpoints desta classe
@@ -36,10 +43,26 @@ public class RevendaController {
 
     // Cria uma nova revenda
     @PostMapping 
-    public ResponseEntity<Revenda> criar(@RequestBody Revenda revenda) {
+    public ResponseEntity<RevendaResponseDTO> criar(@Valid @RequestBody RevendaRequestDTO dto) { // Valida os campos do DTO e faz a Requisição POST
+        Revenda revenda = new Revenda();
+
+        revenda.setRazaoSocial(dto.getRazaoSocial());
+        revenda.setNomeFantasia(dto.getNomeFantasia());
+        revenda.setCnpj(dto.getCnpj());
+        revenda.setTelefone(dto.getTelefone());
+        revenda.setEmail(dto.getEmail());
+        revenda.setEndereco(dto.getEndereco());
+        revenda.setCidade(dto.getCidade());
+        revenda.setEstado(dto.getEstado());
+        revenda.setCep(dto.getCep());
+
         Revenda salva = revendaService.salvar(revenda);
-        return ResponseEntity.status(201).body(salva); // 201 Created — recurso criado com sucesso
-    }
+
+        RevendaResponseDTO response = new RevendaResponseDTO(salva);
+        return ResponseEntity.status(201).body(response);
+
+        }
+    
 
     // Atualiza uma revenda existente
     @PutMapping("/{id}")
