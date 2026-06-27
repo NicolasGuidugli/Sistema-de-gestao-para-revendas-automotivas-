@@ -14,7 +14,7 @@ centralizando a gestão operacional, financeira e documental em um único sistem
 
 ##  Tecnologias Utilizadas
 - **Banco de dados:** PostgreSQL (NeonDB)
-- **Backend:** Java + Spring Boot + JWT + BCrypt + JPA
+- **Backend:** Java + Spring Boot + JWT + BCrypt + JPA/Hibernate + Lombok + Swagger
 - **Frontend:** React + JavaScript + HTML + CSS
 
 ##  Estrutura
