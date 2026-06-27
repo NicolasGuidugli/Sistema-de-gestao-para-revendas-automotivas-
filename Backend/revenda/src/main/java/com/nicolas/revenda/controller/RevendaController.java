@@ -29,16 +29,19 @@ public class RevendaController {
 
     // Lista todas as revendas
     @GetMapping
-    public List<Revenda> listarTodas() {
-        return revendaService.listarTodas();
+    public List<RevendaResponseDTO> listarTodas() {
+        return revendaService.listarTodas()
+        .stream()
+        .map(RevendaResponseDTO::new)
+        .collect(Collectors.toList());
     }
 
     // Busca uma revenda específica pelo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Revenda> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RevendaResponseDTO> buscarPorId(@PathVariable Long id) {
         return revendaService.buscarPorId(id)
-            .map(ResponseEntity::ok) // Se encontrou → retorna 200 OK com a revenda
-            .orElse(ResponseEntity.notFound().build()); // Se não encontrou → retorna 404
+            .map(revenda -> ResponseEntity.ok(new RevendaResponseDTO(revenda))) // Se existir revenda .map executa new e devolve 200 -> OK
+            .orElse(ResponseEntity.notFound().build()); // Se não existir (orElse) devolve 404 -> Not Found
     }
 
     // Cria uma nova revenda
@@ -66,26 +69,45 @@ public class RevendaController {
 
     // Atualiza uma revenda existente
     @PutMapping("/{id}")
-    public ResponseEntity<Revenda> atualizar(
+    public ResponseEntity<RevendaResponseDTO> atualizar(
         @PathVariable Long id,
-        @RequestBody Revenda revenda) {
+        @Valid @RequestBody RevendaRequestDTO dto) {
 
-        return revendaService.buscarPorId(id)
-            .map(existente -> {
-                revenda.setCodigo(id); // Garante que o ID correto será usado na atualização
-                return ResponseEntity.ok(revendaService.atualizar(revenda));
+            return revendaService.buscarPorId(id) // primero buscamos o ID da revenda se ela existir acionamos o .map e atualizamos seus atributos.
+            .map(revendaExistente -> {  // revendaExistente = Para atualizar somente uma revenda já cadastrada.
+
+                revendaExistente.setRazaoSocial(dto.getRazaoSocial());
+                revendaExistente.setNomeFantasia(dto.getNomeFantasia());
+                revendaExistente.setCnpj(dto.getCnpj());
+                revendaExistente.setTelefone(dto.getTelefone());
+                revendaExistente.setEmail(dto.getEmail());
+                revendaExistente.setEndereco(dto.getEndereco());
+                revendaExistente.setCidade(dto.getCidade());
+                revendaExistente.setEstado(dto.getEstado());
+                revendaExistente.setCep(dto.getCep());
+
+                Revenda atualizada = revendaService.atualizar(revendaExistente);
+
+                return ResponseEntity.ok(new RevendaResponseDTO(atualizada));
+
             })
-            .orElse(ResponseEntity.notFound().build()); // Se não encontrou → retorna 404
-    }
+
+                .orElse(ResponseEntity.notFound().build());
+
+        }
+
 
     // Destroi uma revenda :(
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-    if (!revendaService.buscarPorId(id).isPresent()) {
-        return ResponseEntity.notFound().build(); // 404 se não encontrou
-    }
-    revendaService.deletar(id);
-    return ResponseEntity.noContent().build(); // 204 No Content — deletado com sucesso
+        
+        return revendaService.buscarPorId(id)  
+            .map(revenda -> {
+                revendaService.deletar(id);
+                return ResponseEntity.noContent().<Void>build();  // Se a revenda existir devolve 200 Ok "A operação foi realizada com sucesso"
+            })
+             
+            .orElse(ResponseEntity.notFound().build()); // Se não existir erro 404 Not Found. Sem retorno.
     }
 
 }
