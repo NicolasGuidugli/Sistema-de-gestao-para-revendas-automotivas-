@@ -7,6 +7,9 @@ package com.nicolas.revenda.entity; // Declara o pacote da classe
 import jakarta.persistence.*; // Importar ferramentas de banco de dados do JPA
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 @Entity // Diz ao Spring "esta classe representa uma tabela do banco"
 @Table(name = "revendas") // Diz qual tabela ela representa
@@ -171,5 +174,23 @@ public class Revenda {
             this.uuidRevenda = UUID.randomUUID(); // Gera UUID automaticamente se não foi informado
         }
     }
+
+    @OneToMany(  //Significa que uma revenda possui muitos funcionarios.
+        mappedBy = "revenda",
+        fetch = FetchType.LAZY
+    )
+
+    @JsonManagedReference
+    private List<Funcionario> funcionarios;
+
+    public List<Funcionario> getFuncionarios() {
+        return funcionarios;
+    }
+
+    public void setFuncionarios(List<Funcionario> funcionarios) {
+        this.funcionarios = funcionarios;
+    }
+
+
 }
 

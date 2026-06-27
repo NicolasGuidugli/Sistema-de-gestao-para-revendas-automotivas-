@@ -1,7 +1,8 @@
 package com.nicolas.revenda.controller;
 
-//* Porta de entrada da API
+// Porta de entrada da API
 // Recebe as requisições HTTP e devolve respostas
+// Endpoints
 
 import java.util.List;
 import java.util.stream.Collectors;

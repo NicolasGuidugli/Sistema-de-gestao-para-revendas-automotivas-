@@ -7,8 +7,10 @@ package com.nicolas.revenda.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import com.nicolas.revenda.entity.Revenda; // Faz conexão com a entidade Revenda
 
+@Repository
 public interface RevendaRepository extends JpaRepository<Revenda, Long> {
     /* JpaRepository<Revenda, Long> :
 
