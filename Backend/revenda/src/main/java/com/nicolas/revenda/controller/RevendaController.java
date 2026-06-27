@@ -1,9 +1,5 @@
 package com.nicolas.revenda.controller;
 
-// Porta de entrada da API
-// Recebe as requisições HTTP e devolve respostas
-// Endpoints
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,44 +8,59 @@ import org.springframework.web.bind.annotation.*;
 
 import com.nicolas.revenda.entity.Revenda;
 import com.nicolas.revenda.service.RevendaService;
-
-import jakarta.validation.Valid; // @Valid significa: "Antes de executar o método, valide todos os campos do DTO"
-
 import com.nicolas.revenda.dto.RevendaRequestDTO;
 import com.nicolas.revenda.dto.RevendaResponseDTO;
 
-@RestController // Diz ao Spring que esta classe é um Controller que devolve JSON
-@RequestMapping("/api/revendas") // Define o caminho base de todos os endpoints desta classe
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/api/revendas")
+@Tag(name = "Revendas", description = "Gerenciamento de revendas automotivas")
 public class RevendaController {
 
-    private final RevendaService revendaService; // Injeta o Service — Controller não acessa o banco diretamente
+    private final RevendaService revendaService;
 
     public RevendaController(RevendaService revendaService) {
-        this.revendaService = revendaService; 
+        this.revendaService = revendaService;
     }
 
-    // Lista todas as revendas
+    @Operation(summary = "Lista todas as revendas", description = "Retorna uma lista com todas as revendas cadastradas no sistema")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     @GetMapping
     public List<RevendaResponseDTO> listarTodas() {
         return revendaService.listarTodas()
-        .stream()
-        .map(RevendaResponseDTO::new)
-        .collect(Collectors.toList());
+            .stream()
+            .map(RevendaResponseDTO::new)
+            .collect(Collectors.toList());
     }
 
-    // Busca uma revenda específica pelo ID
+    @Operation(summary = "Busca revenda por ID", description = "Retorna os dados de uma revenda específica pelo seu ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Revenda encontrada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Revenda não encontrada")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<RevendaResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RevendaResponseDTO> buscarPorId(
+        @Parameter(description = "ID da revenda", example = "1") @PathVariable Long id) {
         return revendaService.buscarPorId(id)
-            .map(revenda -> ResponseEntity.ok(new RevendaResponseDTO(revenda))) // Se existir revenda .map executa new e devolve 200 -> OK
-            .orElse(ResponseEntity.notFound().build()); // Se não existir (orElse) devolve 404 -> Not Found
+            .map(revenda -> ResponseEntity.ok(new RevendaResponseDTO(revenda)))
+            .orElse(ResponseEntity.notFound().build());
     }
 
-    // Cria uma nova revenda
-    @PostMapping 
-    public ResponseEntity<RevendaResponseDTO> criar(@Valid @RequestBody RevendaRequestDTO dto) { // Valida os campos do DTO e faz a Requisição POST
+    @Operation(summary = "Cadastra nova revenda", description = "Cria um novo registro de revenda no sistema")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Revenda cadastrada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos ou campos obrigatórios ausentes")
+    })
+    @PostMapping
+    public ResponseEntity<RevendaResponseDTO> criar(@Valid @RequestBody RevendaRequestDTO dto) {
         Revenda revenda = new Revenda();
-
         revenda.setRazaoSocial(dto.getRazaoSocial());
         revenda.setNomeFantasia(dto.getNomeFantasia());
         revenda.setCnpj(dto.getCnpj());
@@ -61,22 +72,21 @@ public class RevendaController {
         revenda.setCep(dto.getCep());
 
         Revenda salva = revendaService.salvar(revenda);
+        return ResponseEntity.status(201).body(new RevendaResponseDTO(salva));
+    }
 
-        RevendaResponseDTO response = new RevendaResponseDTO(salva);
-        return ResponseEntity.status(201).body(response);
-
-        }
-    
-
-    // Atualiza uma revenda existente
+    @Operation(summary = "Atualiza uma revenda", description = "Atualiza os dados de uma revenda já cadastrada pelo seu ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Revenda atualizada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @ApiResponse(responseCode = "404", description = "Revenda não encontrada")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<RevendaResponseDTO> atualizar(
-        @PathVariable Long id,
+        @Parameter(description = "ID da revenda a ser atualizada", example = "1") @PathVariable Long id,
         @Valid @RequestBody RevendaRequestDTO dto) {
-
-            return revendaService.buscarPorId(id) // primero buscamos o ID da revenda se ela existir acionamos o .map e atualizamos seus atributos.
-            .map(revendaExistente -> {  // revendaExistente = Para atualizar somente uma revenda já cadastrada.
-
+        return revendaService.buscarPorId(id)
+            .map(revendaExistente -> {
                 revendaExistente.setRazaoSocial(dto.getRazaoSocial());
                 revendaExistente.setNomeFantasia(dto.getNomeFantasia());
                 revendaExistente.setCnpj(dto.getCnpj());
@@ -88,27 +98,24 @@ public class RevendaController {
                 revendaExistente.setCep(dto.getCep());
 
                 Revenda atualizada = revendaService.atualizar(revendaExistente);
-
                 return ResponseEntity.ok(new RevendaResponseDTO(atualizada));
-
             })
-
-                .orElse(ResponseEntity.notFound().build());
-
-        }
-
-
-    // Destroi uma revenda :(
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        
-        return revendaService.buscarPorId(id)  
-            .map(revenda -> {
-                revendaService.deletar(id);
-                return ResponseEntity.noContent().<Void>build();  // Se a revenda existir devolve 200 Ok "A operação foi realizada com sucesso"
-            })
-             
-            .orElse(ResponseEntity.notFound().build()); // Se não existir erro 404 Not Found. Sem retorno.
+            .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Remove uma revenda", description = "Exclui permanentemente uma revenda do sistema pelo seu ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Revenda removida com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Revenda não encontrada")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(
+        @Parameter(description = "ID da revenda a ser removida", example = "1") @PathVariable Long id) {
+        return revendaService.buscarPorId(id)
+            .map(revenda -> {
+                revendaService.deletar(id);
+                return ResponseEntity.noContent().<Void>build();
+            })
+            .orElse(ResponseEntity.notFound().build());
+    }
 }
